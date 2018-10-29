@@ -99,4 +99,28 @@ class TopController extends VoteAppController
         $this->set("percent_this_year", $percent_this_year);
         $this->set("percent_last_year", $percent_last_year);
     }
+    
+    public function admin_del_vote()
+    {
+ 		if($this->isConnected AND $this->User->isAdmin())
+		{
+			if($this->request->is('ajax')) {
+				$this->response->type('json');
+				$this->autoRender = null;
+				$this->loadModel('Vote.Vote');
+				$date = date('Y-m-d h:i:s');
+				$this->Vote->updateAll(
+					array('Vote.deletedAt' => $date),
+					array(['Vote.created LIKE' =>  date('Y') . '-' . date('m') . '-%', 'Vote.deletedAt <=' => $date])
+				);
+				$this->response->body(json_encode(array('statut' => true, 'msg' => $date )));
+			} else {
+                $this->response->body(json_encode(array('statut' => false, 'msg' => $this->Lang->get('ERROR__BAD_REQUEST'))));
+            }
+			
+		} else {
+            $this->redirect('/');
+        }
+		
+	}
 }
