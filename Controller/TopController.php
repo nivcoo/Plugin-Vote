@@ -108,12 +108,12 @@ class TopController extends VoteAppController
 				$this->response->type('json');
 				$this->autoRender = null;
 				$this->loadModel('Vote.Vote');
-				$date = date('Y-m-d h:i:s');
-				$this->Vote->updateAll(
-					array('Vote.deletedAt' => $date),
-					array(['Vote.created LIKE' =>  date('Y') . '-' . date('m') . '-%', 'Vote.deletedAt <=' => $date])
-				);
-				$this->response->body(json_encode(array('statut' => true, 'msg' => $date )));
+				$date = date('Y-m-d H:i:s');
+                $this->Vote->updateAll(
+                    array('deletedAt' => "'$date'"),
+                    array('Vote.created >=' =>  date('Y-m-01'), 'deletedAt <=' => $date)
+                );
+				$this->response->body(json_encode(array('statut' => true, 'msg' => $date)));
 			} else {
                 $this->response->body(json_encode(array('statut' => false, 'msg' => $this->Lang->get('ERROR__BAD_REQUEST'))));
             }
